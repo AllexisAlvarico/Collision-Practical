@@ -22,6 +22,20 @@ public:
 	}
 };
 
+class Box
+{
+public:
+	Point p;
+	int m_width;
+	int m_height;
+
+	void print() {
+		std::cout << "x:" << p.x << " y:" << p.y << " Width:" << m_width << " Height:" << m_height << std::endl;
+	}
+
+};
+
+
 int calculate_hypotenuse(Point a, Point b) {
 	int result = 0;
 
@@ -62,7 +76,19 @@ int main() {
 	Circle npc_circle;
 	npc_circle.p.x = rand() % 10 + 1;
 	npc_circle.p.y = rand() % 10 + 1;
-	npc_circle.r = rand() % 2 + 1;
+	npc_circle.r = rand() % 2 + 1; 
+
+	Box player_box;
+	player_box.m_height = rand() % 5 + 1;
+	player_box.m_width = rand() % 5 + 1;
+	player_box.p.x = rand() % 10 + 1;
+	player_box.p.y = rand() % 10 + 1;
+
+	Box npc_box;
+	npc_box.m_height = rand() % 5 + 1;
+	npc_box.m_width = rand() % 5 + 1;
+	npc_box.p.x = rand() % 10 + 1;
+	npc_box.p.y = rand() % 10 + 1;
 
 
 	while (true) {
@@ -114,10 +140,23 @@ int main() {
 			npc_circle.print();
 		}
 
+		if (player_box.p.x + player_box.m_width < npc_box.p.x - npc_box.m_width || player_box.p.x - player_box.m_width > npc_box.p.x + npc_box.m_width 
+		&& player_box.p.y + player_box.m_height < npc_box.p.y - npc_box.m_height || player_box.p.y - player_box.m_height > npc_box.p.y + npc_box.m_height)
+		{
+			std::cout << "The two boxes collided\n";
+			player_box.print();
+			npc_box.print();
+			std::cin.get();
+		}
+		else
+		{
+			std::cout << "The two boxes has not collided\n";
+			player_box.print();
+			npc_box.print();
+		}
 
-
-
-
+		player_box.p.x = rand() % 10 + 1;
+		player_box.p.y = rand() % 10 + 1;
 
 		player_circle.p.x = rand() % 10 + 1;
 		player_circle.p.y = rand() % 10 + 1;
