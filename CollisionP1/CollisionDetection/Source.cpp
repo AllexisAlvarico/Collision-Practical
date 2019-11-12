@@ -140,8 +140,8 @@ int main() {
 			npc_circle.print();
 		}
 
-		if (player_box.p.x + player_box.m_width < npc_box.p.x - npc_box.m_width || player_box.p.x - player_box.m_width > npc_box.p.x + npc_box.m_width 
-		&& player_box.p.y + player_box.m_height < npc_box.p.y - npc_box.m_height || player_box.p.y - player_box.m_height > npc_box.p.y + npc_box.m_height)
+		if (player_box.p.x + player_box.m_width >= npc_box.p.x || player_box.p.x <= npc_box.p.x + npc_box.m_width 
+		|| player_box.p.y + player_box.m_height >= npc_box.p.y || player_box.p.y <= npc_box.p.y + npc_box.m_height)
 		{
 			std::cout << "The two boxes collided\n";
 			player_box.print();
@@ -153,6 +153,7 @@ int main() {
 			std::cout << "The two boxes has not collided\n";
 			player_box.print();
 			npc_box.print();
+			std::cin.get();
 		}
 
 		player_box.p.x = rand() % 10 + 1;
