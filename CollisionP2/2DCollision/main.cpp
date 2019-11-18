@@ -34,6 +34,8 @@ int main()
 		return EXIT_FAILURE;
 	}
 
+
+
 	// Setup NPC's Default Animated Sprite
 	AnimatedSprite npc_animated_sprite(npc_texture);
 	npc_animated_sprite.addFrame(sf::IntRect(3, 3, 84, 84));
@@ -71,6 +73,49 @@ int main()
 	c2AABB aabb_player;
 	aabb_player.min = c2V(player.getAnimatedSprite().getPosition().x, player.getAnimatedSprite().getPosition().y);
 	aabb_player.max = c2V(player.getAnimatedSprite().getGlobalBounds().width / 6, player.getAnimatedSprite().getGlobalBounds().width / 6);
+
+	//Setup for the capsule
+	c2Capsule capsule_npc;
+	capsule_npc.a = c2V(200, 200);
+	capsule_npc.b = c2V(250, 200);
+	capsule_npc.r = 20;
+
+	c2Poly poly_npc;
+	poly_npc.verts[0] = { 400, 400 };
+	poly_npc.verts[1] = { 450, 440 };
+	poly_npc.verts[2] = { 420, 520 };
+	poly_npc.verts[3] = { 330, 400 };
+	poly_npc.verts[4] = { 400, 400 };
+
+
+
+
+
+	// Shapes for the collisions
+	// box to capsule
+	sf::CircleShape capsule1;
+	capsule1.setRadius(20);
+	capsule1.setOrigin(sf::Vector2f(20,20));
+	capsule1.setPosition(200, 200);
+	capsule1.setFillColor(sf::Color::Yellow);
+	sf::CircleShape capsule2;
+	capsule2.setRadius(20);
+	capsule2.setOrigin(sf::Vector2f(20, 20));
+	capsule2.setPosition(250, 200);
+	capsule2.setFillColor(sf::Color::Yellow);
+	sf::RectangleShape capsuleBox;
+	capsuleBox.setPosition(200, 180);
+	capsuleBox.setSize(sf::Vector2f(50,40));
+	capsuleBox.setFillColor(sf::Color::Yellow);
+	// box to polygon
+	sf::ConvexShape polygon;
+	polygon.setPointCount(5);
+	polygon.setPoint(0, sf::Vector2f(400, 400));
+	polygon.setPoint(1, sf::Vector2f(450, 440));
+	polygon.setPoint(2, sf::Vector2f(420, 520));
+	polygon.setPoint(3, sf::Vector2f(330, 400));
+	polygon.setPoint(4, sf::Vector2f(400, 400));
+	polygon.setFillColor(sf::Color::Red);
 
 
 
@@ -146,9 +191,6 @@ int main()
 		sqaure[3].position = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y + player.getAnimatedSprite().getGlobalBounds().height); // bottom left
 		sqaure[4].position = sf::Vector2f(sf::Mouse::getPosition(window)); // top left
 
-
-
-
 		// Process events
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -206,6 +248,39 @@ int main()
 			}
 		}
 
+
+		if (c2AABBtoCapsule(aabb_player, capsule_npc))
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				sqaure[i].color = sf::Color::Red;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				sqaure[i].color = sf::Color::White;
+			}
+		}
+
+		//if (c2AABBtoPoly(aabb_player, ))
+		//{
+		//	for (int i = 0; i < 5; i++)
+		//	{
+		//		sqaure[i].color = sf::Color::Red;
+		//	}
+		//}
+		//else
+		//{
+		//	for (int i = 0; i < 5; i++)
+		//	{
+		//		sqaure[i].color = sf::Color::White;
+		//	}
+		//}
+
+
+
 		// Clear screen
 		window.clear();
 
@@ -213,6 +288,10 @@ int main()
 		window.draw(player.getAnimatedSprite());
 
 		window.draw(sqaure);
+		window.draw(capsule1);
+		window.draw(capsule2);
+		window.draw(capsuleBox);
+		window.draw(polygon);
 		// Draw the NPC's Current Animated Sprite
 		window.draw(npc.getAnimatedSprite());
 
