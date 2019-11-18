@@ -55,17 +55,17 @@ int main()
 	player_animated_sprite.addFrame(sf::IntRect(428, 3, 84, 84));
 
 	// Setup the NPC
-	GameObject &npc = NPC(npc_animated_sprite);
+	GameObject& npc = NPC(npc_animated_sprite);
 
 	// Setup the Player
-	GameObject &player = Player(player_animated_sprite);
+	GameObject& player = Player(player_animated_sprite);
 
 	//Setup NPC AABB
 	c2AABB aabb_npc;
 	aabb_npc.min = c2V(npc.getAnimatedSprite().getPosition().x, npc.getAnimatedSprite().getPosition().y);
 	aabb_npc.max = c2V(
 		npc.getAnimatedSprite().getPosition().x +
-		npc.getAnimatedSprite().getGlobalBounds().width, 
+		npc.getAnimatedSprite().getGlobalBounds().width,
 		npc.getAnimatedSprite().getPosition().y +
 		npc.getAnimatedSprite().getGlobalBounds().height);
 
@@ -88,8 +88,18 @@ int main()
 	poly_npc.verts[3] = { 330, 400 };
 	poly_npc.verts[4] = { 400, 400 };
 
+	sf::Vector2f pA = { 500,500 };
+	sf::Vector2f pB = { 600,500 };
+	sf::Vector2f dv = pB - pA;
+	float magnitude = sqrt(dv.x * dv.x + dv.y * dv.y);
+	sf::Vector2f unit = { dv / magnitude };
 
+	c2Ray ray_npc;
+	ray_npc.p = { pA.x,pA.y };
+	ray_npc.t = magnitude;
+	ray_npc.d = { dv.x, dv.y };
 
+	c2Raycast ray_cast;
 
 
 	// Shapes for the collisions
@@ -117,6 +127,15 @@ int main()
 	polygon.setPoint(3, sf::Vector2f(330, 400));
 	polygon.setPoint(4, sf::Vector2f(400, 400));
 	polygon.setFillColor(sf::Color::Red);
+	//box to circle
+	
+	sf::Vertex ray_line[]
+	{
+
+		sf::Vertex(pA),
+		sf::Vertex(pB)
+
+	};
 
 
 
@@ -242,32 +261,22 @@ int main()
 				sqaure[i].color = sf::Color::Red;
 			}
 		}
-		else {
-			player.getAnimatedSprite().setColor(sf::Color(0, 255, 0));
-			for (int i = 0; i < 5; i++)
-			{
-				sqaure[i].color = sf::Color::White;
-			}
-		}
-
-
-		result = c2AABBtoCapsule(aabb_player, capsule_npc);
-		if(result){
+		else if(c2AABBtoCapsule(aabb_player, capsule_npc))
+		{
 			for (int i = 0; i < 5; i++)
 			{
 				sqaure[i].color = sf::Color::Red;
 			}
 		}
-		else
+		else if (c2AABBtoPoly(aabb_player, &poly_npc, NULL))
 		{
 			for (int i = 0; i < 5; i++)
 			{
-				sqaure[i].color = sf::Color::White;
+				sqaure[i].color = sf::Color::Red;
 			}
 		}
-
-		result = c2AABBtoPoly(aabb_player, &poly_npc, NULL);
-		if(result){
+		else if (c2RaytoAABB(ray_npc, aabb_player, &ray_cast))
+		{
 			for (int i = 0; i < 5; i++)
 			{
 				sqaure[i].color = sf::Color::Red;
@@ -294,6 +303,7 @@ int main()
 		window.draw(capsule2);
 		window.draw(capsuleBox);
 		window.draw(polygon);
+		window.draw(ray_line, 2, sf::Lines);
 		// Draw the NPC's Current Animated Sprite
 		window.draw(npc.getAnimatedSprite());
 
