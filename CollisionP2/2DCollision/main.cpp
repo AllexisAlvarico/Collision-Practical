@@ -11,6 +11,14 @@
 
 using namespace std;
 
+enum playerShape
+{
+	square,
+	circle,
+	ray
+};
+
+
 
 
 int main()
@@ -34,7 +42,7 @@ int main()
 		return EXIT_FAILURE;
 	}
 
-
+	playerShape m_currentState = square;
 
 	// Setup NPC's Default Animated Sprite
 	AnimatedSprite npc_animated_sprite(npc_texture);
@@ -53,6 +61,16 @@ int main()
 	player_animated_sprite.addFrame(sf::IntRect(258, 3, 84, 84));
 	player_animated_sprite.addFrame(sf::IntRect(343, 3, 84, 84));
 	player_animated_sprite.addFrame(sf::IntRect(428, 3, 84, 84));
+
+
+	//player circle
+	sf::CircleShape playerCircle;
+	playerCircle.setRadius(30);
+	playerCircle.setOrigin(sf::Vector2f(30, 30));
+	playerCircle.setFillColor(sf::Color::White);
+	playerCircle.setOutlineThickness(2);
+	//playerCircle.setOutlineColor(sf::Color::White);
+
 
 	// Setup the NPC
 	GameObject& npc = NPC(npc_animated_sprite);
@@ -87,6 +105,23 @@ int main()
 	poly_npc.verts[2] = { 420, 520 };
 	poly_npc.verts[3] = { 330, 400 };
 	poly_npc.verts[4] = { 400, 400 };
+
+
+	c2Circle circle_npc;
+	circle_npc.p.x = 400;
+	circle_npc.p.y = 250;
+	circle_npc.r = 30;
+
+	sf::CircleShape npcCircle;
+	npcCircle.setPosition(sf::Vector2f(400, 250));
+	npcCircle.setRadius(30);
+	npcCircle.setOrigin(sf::Vector2f(30, 30));
+	npcCircle.setFillColor(sf::Color::Cyan);
+
+	c2Circle circle_player;
+	circle_player.p = c2V(playerCircle.getPosition().x , playerCircle.getPosition().y);
+	circle_player.r = 30;
+
 
 	sf::Vector2f pA = { 500,500 };
 	sf::Vector2f pB = { 600,500 };
@@ -127,8 +162,7 @@ int main()
 	polygon.setPoint(3, sf::Vector2f(330, 400));
 	polygon.setPoint(4, sf::Vector2f(400, 400));
 	polygon.setFillColor(sf::Color::Red);
-	//box to circle
-	
+	//box to ray
 	sf::Vertex ray_line[]
 	{
 
@@ -136,6 +170,7 @@ int main()
 		sf::Vertex(pB)
 
 	};
+
 
 
 
@@ -154,7 +189,14 @@ int main()
 	while (window.isOpen())
 	{
 		// Move Sprite Follow Mouse
-		player.getAnimatedSprite().setPosition(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
+		if (m_currentState == square)
+		{
+			player.getAnimatedSprite().setPosition(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
+		}
+		else if (m_currentState == circle)
+		{
+			playerCircle.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+		}
 		
 		// Move The NPC
 		sf::Vector2f move_to(npc.getAnimatedSprite().getPosition().x + direction.x, npc.getAnimatedSprite().getPosition().y + direction.y);
@@ -204,13 +246,27 @@ int main()
 		);
 
 
-		// sets up the array for the square
+
 		sf::VertexArray sqaure{ sf::LinesStrip,5 };
-		sqaure[0].position = sf::Vector2f(sf::Mouse::getPosition(window)); // top left
-		sqaure[1].position = sf::Vector2f(sf::Mouse::getPosition(window).x + player.getAnimatedSprite().getGlobalBounds().width, sf::Mouse::getPosition(window).y); // top right
-		sqaure[2].position = sf::Vector2f(sf::Mouse::getPosition(window).x + player.getAnimatedSprite().getGlobalBounds().width, sf::Mouse::getPosition(window).y + player.getAnimatedSprite().getGlobalBounds().height); // bottom right
-		sqaure[3].position = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y + player.getAnimatedSprite().getGlobalBounds().height); // bottom left
-		sqaure[4].position = sf::Vector2f(sf::Mouse::getPosition(window)); // top left
+		// sets up the array for the square
+		if (m_currentState == square)
+		{
+			sqaure[0].position = sf::Vector2f(sf::Mouse::getPosition(window)); // top left
+			sqaure[1].position = sf::Vector2f(sf::Mouse::getPosition(window).x + player.getAnimatedSprite().getGlobalBounds().width, sf::Mouse::getPosition(window).y); // top right
+			sqaure[2].position = sf::Vector2f(sf::Mouse::getPosition(window).x + player.getAnimatedSprite().getGlobalBounds().width, sf::Mouse::getPosition(window).y + player.getAnimatedSprite().getGlobalBounds().height); // bottom right
+			sqaure[3].position = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y + player.getAnimatedSprite().getGlobalBounds().height); // bottom left
+			sqaure[4].position = sf::Vector2f(sf::Mouse::getPosition(window)); // top left
+		}
+
+
+		if (m_currentState == circle)
+		{
+			playerCircle.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+			circle_player.p.x = playerCircle.getPosition().x;
+			circle_player.p.y = playerCircle.getPosition().y;
+		}
+
+
 
 		// Process events
 		sf::Event event;
@@ -225,15 +281,15 @@ int main()
 			case sf::Event::KeyPressed:
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 				{
-					input.setCurrent(Input::Action::LEFT);
+					m_currentState = square;
 				}
 				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 				{
-					input.setCurrent(Input::Action::RIGHT);
+					m_currentState = circle;
 				}
 				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 				{
-					input.setCurrent(Input::Action::UP);
+					m_currentState = ray;
 				}
 				break;
 			default:
@@ -252,57 +308,90 @@ int main()
 		npc.update();
 
 		// Check for collisions
-		result = c2AABBtoAABB(aabb_player, aabb_npc);
-		cout << ((result != 0) ? ("Collision") : "") << endl;
-		if (result){
-			player.getAnimatedSprite().setColor(sf::Color(255,0,0));
-			for (int i = 0; i < 5; i++)
-			{
-				sqaure[i].color = sf::Color::Red;
-			}
-		}
-		else if(c2AABBtoCapsule(aabb_player, capsule_npc))
-		{
-			for (int i = 0; i < 5; i++)
-			{
-				sqaure[i].color = sf::Color::Red;
-			}
-		}
-		else if (c2AABBtoPoly(aabb_player, &poly_npc, NULL))
-		{
-			for (int i = 0; i < 5; i++)
-			{
-				sqaure[i].color = sf::Color::Red;
-			}
-		}
-		else if (c2RaytoAABB(ray_npc, aabb_player, &ray_cast))
-		{
-			for (int i = 0; i < 5; i++)
-			{
-				sqaure[i].color = sf::Color::Red;
-			}
-		}
-		else
-		{
-			for (int i = 0; i < 5; i++)
-			{
-				sqaure[i].color = sf::Color::White;
-			}
-		}
 
+
+		if (m_currentState == square)
+		{
+			if (c2AABBtoAABB(aabb_player, aabb_npc))
+			{
+				player.getAnimatedSprite().setColor(sf::Color(255, 0, 0));
+				for (int i = 0; i < 5; i++)
+				{
+					sqaure[i].color = sf::Color::Red;
+				}
+			}
+			else if (c2AABBtoCapsule(aabb_player, capsule_npc))
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					sqaure[i].color = sf::Color::Red;
+				}
+			}
+			else if (c2AABBtoPoly(aabb_player, &poly_npc, NULL))
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					sqaure[i].color = sf::Color::Red;
+				}
+			}
+			else if (c2RaytoAABB(ray_npc, aabb_player, &ray_cast))
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					sqaure[i].color = sf::Color::Red;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					sqaure[i].color = sf::Color::White;
+				}
+			}
+
+
+		}
+		
+		if (m_currentState == circle)
+		{
+			if (c2CircletoAABB(circle_player, aabb_npc))
+			{
+				//cout << "it has collided\n";
+				playerCircle.setOutlineColor(sf::Color::Red);
+			}
+			else if (c2CircletoCircle(circle_player, circle_npc))
+			{
+				playerCircle.setOutlineColor(sf::Color::Red);
+			}
+			else
+			{
+				playerCircle.setOutlineColor(sf::Color::White);
+			}
+
+		}
 
 
 		// Clear screen
 		window.clear();
 
-		// Draw the Players Current Animated Sprite
-		window.draw(player.getAnimatedSprite());
+
+		if (m_currentState == square)
+		{
+			// Draw the Players Current Animated Sprite
+			window.draw(player.getAnimatedSprite());
+		}
+
+		if (m_currentState == circle)
+		{
+			window.draw(playerCircle);
+		}
 
 		window.draw(sqaure);
 		window.draw(capsule1);
 		window.draw(capsule2);
 		window.draw(capsuleBox);
 		window.draw(polygon);
+		window.draw(npcCircle);
 		window.draw(ray_line, 2, sf::Lines);
 		// Draw the NPC's Current Animated Sprite
 		window.draw(npc.getAnimatedSprite());
