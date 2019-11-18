@@ -81,6 +81,7 @@ int main()
 	capsule_npc.r = 20;
 
 	c2Poly poly_npc;
+	poly_npc.count = 5;
 	poly_npc.verts[0] = { 400, 400 };
 	poly_npc.verts[1] = { 450, 440 };
 	poly_npc.verts[2] = { 420, 520 };
@@ -264,20 +265,20 @@ int main()
 			}
 		}
 
-		//if (c2AABBtoPoly(aabb_player, ))
-		//{
-		//	for (int i = 0; i < 5; i++)
-		//	{
-		//		sqaure[i].color = sf::Color::Red;
-		//	}
-		//}
-		//else
-		//{
-		//	for (int i = 0; i < 5; i++)
-		//	{
-		//		sqaure[i].color = sf::Color::White;
-		//	}
-		//}
+		if (c2AABBtoPoly(aabb_player, &poly_npc, NULL))
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				sqaure[i].color = sf::Color::Red;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				sqaure[i].color = sf::Color::White;
+			}
+		}
 
 
 
