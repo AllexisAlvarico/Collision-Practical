@@ -184,6 +184,7 @@ int main()
 			player.getAnimatedSprite().getGlobalBounds().height
 		);
 
+
 		// sets up the array for the square
 		sf::VertexArray sqaure{ sf::LinesStrip,5 };
 		sqaure[0].position = sf::Vector2f(sf::Mouse::getPosition(window)); // top left
@@ -250,8 +251,8 @@ int main()
 		}
 
 
-		if (c2AABBtoCapsule(aabb_player, capsule_npc))
-		{
+		result = c2AABBtoCapsule(aabb_player, capsule_npc);
+		if(result){
 			for (int i = 0; i < 5; i++)
 			{
 				sqaure[i].color = sf::Color::Red;
@@ -265,8 +266,8 @@ int main()
 			}
 		}
 
-		if (c2AABBtoPoly(aabb_player, &poly_npc, NULL))
-		{
+		result = c2AABBtoPoly(aabb_player, &poly_npc, NULL);
+		if(result){
 			for (int i = 0; i < 5; i++)
 			{
 				sqaure[i].color = sf::Color::Red;
