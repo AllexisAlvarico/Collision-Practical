@@ -34,13 +34,6 @@ int main()
 		return EXIT_FAILURE;
 	}
 
-	sf::VertexArray sqaure { sf::LinesStrip,5 };
-	sqaure[0].position = sf::Vector2f(200, 100);
-	sqaure[1].position = sf::Vector2f(200, 120);
-	sqaure[2].position = sf::Vector2f(220, 120);
-	sqaure[3].position = sf::Vector2f(220, 100);
-	sqaure[4].position = sf::Vector2f(199, 100);
-
 	// Setup NPC's Default Animated Sprite
 	AnimatedSprite npc_animated_sprite(npc_texture);
 	npc_animated_sprite.addFrame(sf::IntRect(3, 3, 84, 84));
@@ -78,6 +71,9 @@ int main()
 	c2AABB aabb_player;
 	aabb_player.min = c2V(player.getAnimatedSprite().getPosition().x, player.getAnimatedSprite().getPosition().y);
 	aabb_player.max = c2V(player.getAnimatedSprite().getGlobalBounds().width / 6, player.getAnimatedSprite().getGlobalBounds().width / 6);
+
+
+
 
 
 	// Initialize Input
@@ -137,10 +133,21 @@ int main()
 		);
 		aabb_player.max = c2V(
 			player.getAnimatedSprite().getPosition().x +
-			player.getAnimatedSprite().getGlobalBounds().width, 
+			player.getAnimatedSprite().getGlobalBounds().width,  
 			player.getAnimatedSprite().getPosition().y + 
 			player.getAnimatedSprite().getGlobalBounds().height
 		);
+
+		// sets up the array for the square
+		sf::VertexArray sqaure{ sf::LinesStrip,5 };
+		sqaure[0].position = sf::Vector2f(sf::Mouse::getPosition(window)); // top left
+		sqaure[1].position = sf::Vector2f(sf::Mouse::getPosition(window).x + player.getAnimatedSprite().getGlobalBounds().width, sf::Mouse::getPosition(window).y); // top right
+		sqaure[2].position = sf::Vector2f(sf::Mouse::getPosition(window).x + player.getAnimatedSprite().getGlobalBounds().width, sf::Mouse::getPosition(window).y + player.getAnimatedSprite().getGlobalBounds().height); // bottom right
+		sqaure[3].position = sf::Vector2f(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y + player.getAnimatedSprite().getGlobalBounds().height); // bottom left
+		sqaure[4].position = sf::Vector2f(sf::Mouse::getPosition(window)); // top left
+
+
+
 
 		// Process events
 		sf::Event event;
@@ -186,9 +193,17 @@ int main()
 		cout << ((result != 0) ? ("Collision") : "") << endl;
 		if (result){
 			player.getAnimatedSprite().setColor(sf::Color(255,0,0));
+			for (int i = 0; i < 5; i++)
+			{
+				sqaure[i].color = sf::Color::Red;
+			}
 		}
 		else {
 			player.getAnimatedSprite().setColor(sf::Color(0, 255, 0));
+			for (int i = 0; i < 5; i++)
+			{
+				sqaure[i].color = sf::Color::White;
+			}
 		}
 
 		// Clear screen
