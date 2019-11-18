@@ -98,6 +98,8 @@ int main()
 	capsule_npc.b = c2V(250, 200);
 	capsule_npc.r = 20;
 
+
+
 	c2Poly poly_npc;
 	poly_npc.count = 5;
 	poly_npc.verts[0] = { 400, 400 };
@@ -123,16 +125,28 @@ int main()
 	circle_player.r = 30;
 
 
-	sf::Vector2f pA = { 500,500 };
-	sf::Vector2f pB = { 600,500 };
+	sf::Vector2f pA = { 500,400 };
+	sf::Vector2f pB = { 600,400 };
 	sf::Vector2f dv = pB - pA;
 	float magnitude = sqrt(dv.x * dv.x + dv.y * dv.y);
 	sf::Vector2f unit = { dv / magnitude };
 
 	c2Ray ray_npc;
-	ray_npc.p = { pA.x,pA.y };
+	ray_npc.p = { pA.x, pA.y };
 	ray_npc.t = magnitude;
-	ray_npc.d = { dv.x, dv.y };
+	ray_npc.d = { unit.x, unit.y };
+
+	//player ray cast
+	sf::Vector2f lineA = { 500,400 };
+	sf::Vector2f lineB = { sf::Vector2f((sf::Mouse::getPosition(window).x),(sf::Mouse::getPosition(window).y)) };
+	sf::Vector2f playerdv = lineB - lineA;
+	float pMagnitude = sqrt(playerdv.x * playerdv.x + playerdv.y * playerdv.y);
+	sf::Vector2f pUnit = { playerdv / pMagnitude };
+
+	c2Ray ray_player;
+	ray_player.p = { lineA.x , lineA.y };
+	ray_player.t = pMagnitude;
+	ray_player.d = { pUnit.x,pUnit.y };
 
 	c2Raycast ray_cast;
 
@@ -168,6 +182,14 @@ int main()
 
 		sf::Vertex(pA),
 		sf::Vertex(pB)
+
+	};
+
+	sf::Vertex ray_pLine[]
+	{
+
+		sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(window))),
+		sf::Vertex(lineB + sf::Vector2f(sf::Mouse::getPosition(window)))
 
 	};
 
@@ -266,6 +288,15 @@ int main()
 			circle_player.p.y = playerCircle.getPosition().y;
 		}
 
+		if (m_currentState == ray)
+		{
+			ray_pLine[0].position = sf::Vector2f(sf::Mouse::getPosition(window)) + sf::Vector2f(lineA.x, 0);
+			ray_player.p.x = (sf::Mouse::getPosition(window).x);
+			ray_player.p.y = (sf::Mouse::getPosition(window).y);
+			ray_pLine[1].position = sf::Vector2f(sf::Mouse::getPosition(window));
+		
+		}
+
 
 
 		// Process events
@@ -309,7 +340,10 @@ int main()
 
 		// Check for collisions
 
-
+		/// <summary>
+		/// Square collision
+		/// </summary>
+		/// <returns></returns>
 		if (m_currentState == square)
 		{
 			if (c2AABBtoAABB(aabb_player, aabb_npc))
@@ -352,6 +386,10 @@ int main()
 
 		}
 		
+		/// <summary>
+		/// The circle collision
+		/// </summary>
+		/// <returns></returns>
 		if (m_currentState == circle)
 		{
 			if (c2CircletoAABB(circle_player, aabb_npc))
@@ -363,10 +401,27 @@ int main()
 			{
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
+			else if (c2RaytoCircle(ray_npc, circle_player, &ray_cast))
+			{
+				playerCircle.setOutlineColor(sf::Color::Red);
+			}
+			else if (c2CircletoCapsule(circle_player, capsule_npc))
+			{
+				playerCircle.setOutlineColor(sf::Color::Red);
+			}
+			else if (c2CircletoPoly(circle_player, &poly_npc, NULL))
+			{
+				playerCircle.setOutlineColor(sf::Color::Red);
+			}
 			else
 			{
 				playerCircle.setOutlineColor(sf::Color::White);
 			}
+
+		}
+
+		if (m_currentState == ray)
+		{
 
 		}
 
@@ -386,6 +441,10 @@ int main()
 			window.draw(playerCircle);
 		}
 
+		if (m_currentState == ray)
+		{
+			window.draw(ray_pLine, 2, sf::Lines);
+		}
 		window.draw(sqaure);
 		window.draw(capsule1);
 		window.draw(capsule2);
@@ -393,6 +452,7 @@ int main()
 		window.draw(polygon);
 		window.draw(npcCircle);
 		window.draw(ray_line, 2, sf::Lines);
+	
 		// Draw the NPC's Current Animated Sprite
 		window.draw(npc.getAnimatedSprite());
 
