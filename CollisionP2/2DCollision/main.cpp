@@ -11,6 +11,9 @@
 
 using namespace std;
 
+/// <summary>
+/// enums for the changing of player shape and coillision
+/// </summary>
 enum playerShape
 {
 	square,
@@ -99,7 +102,7 @@ int main()
 	capsule_npc.r = 20;
 
 
-
+	//sets the polygon npc
 	c2Poly poly_npc;
 	poly_npc.count = 5;
 	poly_npc.verts[0] = { 400, 400 };
@@ -108,7 +111,7 @@ int main()
 	poly_npc.verts[3] = { 330, 400 };
 	poly_npc.verts[4] = { 400, 400 };
 
-
+	//sets the circle npc
 	c2Circle circle_npc;
 	circle_npc.p.x = 400;
 	circle_npc.p.y = 250;
@@ -120,16 +123,20 @@ int main()
 	npcCircle.setOrigin(sf::Vector2f(30, 30));
 	npcCircle.setFillColor(sf::Color::Cyan);
 
+	//sets the circle player
 	c2Circle circle_player;
 	circle_player.p = c2V(playerCircle.getPosition().x , playerCircle.getPosition().y);
 	circle_player.r = 30;
 
 
+
+	//sets up the ray npc
 	sf::Vector2f pA = { 500,400 };
 	sf::Vector2f pB = { 600,400 };
 	sf::Vector2f dv = pB - pA;
 	float magnitude = sqrt(dv.x * dv.x + dv.y * dv.y);
 	sf::Vector2f unit = { dv / magnitude };
+
 
 	c2Ray ray_npc;
 	ray_npc.p = { pA.x, pA.y };
@@ -143,6 +150,7 @@ int main()
 	float pMagnitude = sqrt(playerdv.x * playerdv.x + playerdv.y * playerdv.y);
 	sf::Vector2f pUnit = { playerdv / pMagnitude };
 
+	//ray components
 	c2Ray ray_player;
 	ray_player.p = { lineA.x , lineA.y };
 	ray_player.t = pMagnitude;
@@ -152,7 +160,7 @@ int main()
 
 
 	// Shapes for the collisions
-	// box to capsule
+	// capsule components
 	sf::CircleShape capsule1;
 	capsule1.setRadius(20);
 	capsule1.setOrigin(sf::Vector2f(20,20));
@@ -185,6 +193,7 @@ int main()
 
 	};
 
+	// sets up the line
 	sf::Vertex ray_pLine[]
 	{
 
@@ -280,7 +289,10 @@ int main()
 			sqaure[4].position = sf::Vector2f(sf::Mouse::getPosition(window)); // top left
 		}
 
-
+		/// <summary>
+		/// sets up position of the mouse for the circle player
+		/// </summary>
+		/// <returns></returns>
 		if (m_currentState == circle)
 		{
 			playerCircle.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
@@ -288,6 +300,10 @@ int main()
 			circle_player.p.y = playerCircle.getPosition().y;
 		}
 
+		/// <summary>
+		/// sets up position of the mouse for the ray player
+		/// </summary>
+		/// <returns></returns>
 		if (m_currentState == ray)
 		{
 			ray_pLine[0].position = sf::Vector2f(sf::Mouse::getPosition(window)) + sf::Vector2f(100, 0);
@@ -312,15 +328,15 @@ int main()
 			case sf::Event::KeyPressed:
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 				{
-					m_currentState = square;
+					m_currentState = square; // changes the player's shape
 				}
 				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 				{
-					m_currentState = circle;
+					m_currentState = circle; // changes the player's shape
 				}
 				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 				{
-					m_currentState = ray;
+					m_currentState = ray; // changes the player's shape
 				}
 				break;
 			default:
@@ -342,6 +358,7 @@ int main()
 
 		/// <summary>
 		/// Square collision
+		/// If the square collide the box outline would turn red if not it would stay white
 		/// </summary>
 		/// <returns></returns>
 		if (m_currentState == square)
@@ -388,6 +405,7 @@ int main()
 		
 		/// <summary>
 		/// The circle collision
+		/// If the circle collide the circle outline would turn red if not it would stay white
 		/// </summary>
 		/// <returns></returns>
 		if (m_currentState == circle)
@@ -420,6 +438,12 @@ int main()
 
 		}
 
+
+		/// <summary>
+		/// The ray collision
+		/// If the Ray collide the line would turn red if not it would stay white
+		/// </summary>
+		/// <returns></returns>
 		if (m_currentState == ray)
 		{
 			if (c2RaytoAABB(ray_player, aabb_npc, &ray_cast))
@@ -482,13 +506,13 @@ int main()
 		{
 			window.draw(ray_pLine, 2, sf::Lines);
 		}
-		window.draw(sqaure);
-		window.draw(capsule1);
-		window.draw(capsule2);
-		window.draw(capsuleBox);
-		window.draw(polygon);
-		window.draw(npcCircle);
-		window.draw(ray_line, 2, sf::Lines);
+		window.draw(sqaure); // square npc shape
+		window.draw(capsule1); // component of the capsule npc
+		window.draw(capsule2); // component of the capsule npc
+		window.draw(capsuleBox); // component of the capsule npc
+		window.draw(polygon); // polygon npc
+		window.draw(npcCircle); // circle npc
+		window.draw(ray_line, 2, sf::Lines); // draws a line
 	
 		// Draw the NPC's Current Animated Sprite
 		window.draw(npc.getAnimatedSprite());
