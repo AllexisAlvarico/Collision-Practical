@@ -188,8 +188,8 @@ int main()
 	sf::Vertex ray_pLine[]
 	{
 
-		sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(window))),
-		sf::Vertex(lineB + sf::Vector2f(sf::Mouse::getPosition(window)))
+		sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(window)) + sf::Vector2f(100, 0)),
+		sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(window)))
 
 	};
 
@@ -290,7 +290,7 @@ int main()
 
 		if (m_currentState == ray)
 		{
-			ray_pLine[0].position = sf::Vector2f(sf::Mouse::getPosition(window)) + sf::Vector2f(lineA.x, 0);
+			ray_pLine[0].position = sf::Vector2f(sf::Mouse::getPosition(window)) + sf::Vector2f(100, 0);
 			ray_player.p.x = (sf::Mouse::getPosition(window).x);
 			ray_player.p.y = (sf::Mouse::getPosition(window).y);
 			ray_pLine[1].position = sf::Vector2f(sf::Mouse::getPosition(window));
@@ -422,7 +422,44 @@ int main()
 
 		if (m_currentState == ray)
 		{
+			if (c2RaytoAABB(ray_player, aabb_npc, &ray_cast))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					ray_pLine[i].color = sf::Color::Red;
+				}
 
+			}
+			else if (c2RaytoCapsule(ray_player, capsule_npc, &ray_cast))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					ray_pLine[i].color = sf::Color::Red;
+				}
+			}
+			else if (c2RaytoCircle(ray_player, circle_npc, &ray_cast))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					ray_pLine[i].color = sf::Color::Red;
+				}
+			}
+			else if (c2RaytoPoly(ray_player, &poly_npc,NULL, &ray_cast))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					ray_pLine[i].color = sf::Color::Red;
+				}
+			}
+
+			else
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					ray_pLine[i].color = sf::Color::White;
+				}
+
+			}
 		}
 
 
