@@ -374,7 +374,7 @@ int main()
 				player.getAnimatedSprite().setColor(sf::Color(255, 0, 0));
 				for (int i = 0; i < 5; i++)
 				{
-					cout << "Collides with the box\n";
+					//cout << "Collides with the box\n";
 					sqaure[i].color = sf::Color::Red;
 				}
 			}
@@ -382,7 +382,7 @@ int main()
 			{
 				for (int i = 0; i < 5; i++)
 				{
-					cout << "Collides with the capsule\n";
+					//cout << "Collides with the capsule\n";
 					sqaure[i].color = sf::Color::Red;
 				}
 			}
@@ -390,7 +390,7 @@ int main()
 			{
 				for (int i = 0; i < 5; i++)
 				{
-					cout << "Collides with the poly\n";
+					//cout << "Collides with the poly\n";
 					sqaure[i].color = sf::Color::Red;
 				}
 			}
@@ -398,7 +398,7 @@ int main()
 			{
 				for (int i = 0; i < 5; i++)
 				{
-					cout << "Collides with the ray\n";
+					//cout << "Collides with the ray\n";
 					sqaure[i].color = sf::Color::Red;
 				}
 			}
@@ -422,27 +422,27 @@ int main()
 		{
 			if (c2CircletoAABB(circle_player, aabb_npc))
 			{
-				cout << "Collides with the box\n";
+				//cout << "Collides with the box\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else if (c2CircletoCircle(circle_player, circle_npc))
 			{
-				cout << "Collides with the circle\n";
+				//cout << "Collides with the circle\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else if (c2RaytoCircle(ray_npc, circle_player, &ray_cast))
 			{
-				cout << "Collides with the ray\n";
+				//cout << "Collides with the ray\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else if (c2CircletoCapsule(circle_player, capsule_npc))
 			{
-				cout << "Collides with the capsule\n";
+				//cout << "Collides with the capsule\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else if (c2CircletoPoly(circle_player, &poly_npc, NULL))
 			{
-				cout << "Collides with the poly\n";
+				//cout << "Collides with the poly\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else
@@ -464,7 +464,7 @@ int main()
 			{
 				for (int i = 0; i < 2; i++)
 				{
-					cout << "Collides with the box\n";
+					//cout << "Collides with the box\n";
 					ray_pLine[i].color = sf::Color::Red;
 				}
 
@@ -473,7 +473,7 @@ int main()
 			{
 				for (int i = 0; i < 2; i++)
 				{
-					cout << "Collides with the capsule\n";
+					//cout << "Collides with the capsule\n";
 					ray_pLine[i].color = sf::Color::Red;
 				}
 			}
@@ -481,7 +481,7 @@ int main()
 			{
 				for (int i = 0; i < 2; i++)
 				{
-					cout << "Collides with the Poly\n";
+					//cout << "Collides with the Poly\n";
 					ray_pLine[i].color = sf::Color::Red;
 				}
 			}
@@ -489,7 +489,7 @@ int main()
 			{
 				for (int i = 0; i < 2; i++)
 				{
-					cout << "Collides with the circle\n";
+					//cout << "Collides with the circle\n";
 					ray_pLine[i].color = sf::Color::Red;
 				}
 			}
