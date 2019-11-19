@@ -110,6 +110,7 @@ int main()
 	poly_npc.verts[2] = { 420, 520 };
 	poly_npc.verts[3] = { 330, 400 };
 	poly_npc.verts[4] = { 400, 400 };
+	c2MakePoly(&poly_npc);
 
 	//sets the circle npc
 	c2Circle circle_npc;
@@ -144,15 +145,22 @@ int main()
 	ray_npc.d = { unit.x, unit.y };
 
 	//player ray cast
-	sf::Vector2f lineA = { 500,400 };
-	sf::Vector2f lineB = { sf::Vector2f((sf::Mouse::getPosition(window).x),(sf::Mouse::getPosition(window).y)) };
-	sf::Vector2f playerdv = lineB - lineA;
+	// sets up the line
+	sf::Vertex ray_pLine[]
+	{
+
+		sf::Vertex({ 400,300 }),
+		sf::Vertex({ sf::Vector2f((sf::Mouse::getPosition(window).x),(sf::Mouse::getPosition(window).y)) })
+
+	};
+
+	sf::Vector2f playerdv = ray_pLine[1].position - ray_pLine[0].position;
 	float pMagnitude = sqrt(playerdv.x * playerdv.x + playerdv.y * playerdv.y);
 	sf::Vector2f pUnit = { playerdv / pMagnitude };
 
 	//ray components
 	c2Ray ray_player;
-	ray_player.p = { lineA.x , lineA.y };
+	ray_player.p = { ray_pLine[0].position.x , ray_pLine[0].position.y };
 	ray_player.t = pMagnitude;
 	ray_player.d = { pUnit.x,pUnit.y };
 
@@ -190,15 +198,6 @@ int main()
 
 		sf::Vertex(pA),
 		sf::Vertex(pB)
-
-	};
-
-	// sets up the line
-	sf::Vertex ray_pLine[]
-	{
-
-		sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(window)) + sf::Vector2f(100, 0)),
-		sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(window)))
 
 	};
 
@@ -306,11 +305,18 @@ int main()
 		/// <returns></returns>
 		if (m_currentState == ray)
 		{
-			ray_pLine[0].position = sf::Vector2f(sf::Mouse::getPosition(window)) + sf::Vector2f(100, 0);
-			ray_player.p.x = (sf::Mouse::getPosition(window).x);
-			ray_player.p.y = (sf::Mouse::getPosition(window).y);
 			ray_pLine[1].position = sf::Vector2f(sf::Mouse::getPosition(window));
-		
+			playerdv = ray_pLine[1].position - ray_pLine[0].position;
+			pMagnitude = sqrt(playerdv.x * playerdv.x + playerdv.y * playerdv.y);
+			pUnit = { playerdv / pMagnitude };
+
+			ray_player.p = { ray_pLine[0].position.x , ray_pLine[0].position.y };
+			ray_player.t = pMagnitude;
+			ray_player.d = { pUnit.x,pUnit.y };
+
+			//ray_pLine[0].position = sf::Vector2f(sf::Mouse::getPosition(window)) + sf::Vector2f(50,0);
+			/*ray_player.p.x = (sf::Mouse::getPosition(window).x);
+			ray_player.p.y = (sf::Mouse::getPosition(window).y);*/
 		}
 
 
@@ -368,6 +374,7 @@ int main()
 				player.getAnimatedSprite().setColor(sf::Color(255, 0, 0));
 				for (int i = 0; i < 5; i++)
 				{
+					cout << "Collides with the box\n";
 					sqaure[i].color = sf::Color::Red;
 				}
 			}
@@ -375,6 +382,7 @@ int main()
 			{
 				for (int i = 0; i < 5; i++)
 				{
+					cout << "Collides with the capsule\n";
 					sqaure[i].color = sf::Color::Red;
 				}
 			}
@@ -382,6 +390,7 @@ int main()
 			{
 				for (int i = 0; i < 5; i++)
 				{
+					cout << "Collides with the poly\n";
 					sqaure[i].color = sf::Color::Red;
 				}
 			}
@@ -389,6 +398,7 @@ int main()
 			{
 				for (int i = 0; i < 5; i++)
 				{
+					cout << "Collides with the ray\n";
 					sqaure[i].color = sf::Color::Red;
 				}
 			}
@@ -412,23 +422,27 @@ int main()
 		{
 			if (c2CircletoAABB(circle_player, aabb_npc))
 			{
-				//cout << "it has collided\n";
+				cout << "Collides with the box\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else if (c2CircletoCircle(circle_player, circle_npc))
 			{
+				cout << "Collides with the circle\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else if (c2RaytoCircle(ray_npc, circle_player, &ray_cast))
 			{
+				cout << "Collides with the ray\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else if (c2CircletoCapsule(circle_player, capsule_npc))
 			{
+				cout << "Collides with the capsule\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else if (c2CircletoPoly(circle_player, &poly_npc, NULL))
 			{
+				cout << "Collides with the poly\n";
 				playerCircle.setOutlineColor(sf::Color::Red);
 			}
 			else
@@ -450,6 +464,7 @@ int main()
 			{
 				for (int i = 0; i < 2; i++)
 				{
+					cout << "Collides with the box\n";
 					ray_pLine[i].color = sf::Color::Red;
 				}
 
@@ -458,13 +473,7 @@ int main()
 			{
 				for (int i = 0; i < 2; i++)
 				{
-					ray_pLine[i].color = sf::Color::Red;
-				}
-			}
-			else if (c2RaytoCircle(ray_player, circle_npc, &ray_cast))
-			{
-				for (int i = 0; i < 2; i++)
-				{
+					cout << "Collides with the capsule\n";
 					ray_pLine[i].color = sf::Color::Red;
 				}
 			}
@@ -472,10 +481,18 @@ int main()
 			{
 				for (int i = 0; i < 2; i++)
 				{
+					cout << "Collides with the Poly\n";
 					ray_pLine[i].color = sf::Color::Red;
 				}
 			}
-
+			else if (c2RaytoCircle(ray_player, circle_npc, &ray_cast))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					cout << "Collides with the circle\n";
+					ray_pLine[i].color = sf::Color::Red;
+				}
+			}
 			else
 			{
 				for (int i = 0; i < 2; i++)
